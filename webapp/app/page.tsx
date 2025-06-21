@@ -5,7 +5,7 @@ import type React from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
-import { Shield, Send, Loader2, User, HelpCircle, Database, AlertTriangle, Scale } from "lucide-react"
+import { Shield, Send, Loader2, User, HelpCircle, Database, AlertTriangle, Scale, Map } from "lucide-react"
 import { useEffect, useRef } from "react"
 import Link from "next/link"
 import { useGlobalChat } from "./chat-provider"
@@ -108,12 +108,20 @@ export default function ImmigrationChatbot() {
             <h1 className="text-xl font-semibold text-gray-900">Immigration Rights Assistant</h1>
             {getRagStatusDisplay()}
           </div>
-          <Link href="/faq">
-            <Button variant="outline" size="sm" className="flex items-center gap-2">
-              <HelpCircle className="h-4 w-4" />
-              FAQ
-            </Button>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link href="/map">
+              <Button variant="outline" size="sm" className="flex items-center gap-2">
+                <Map className="h-4 w-4" />
+                ICE Raids Map
+              </Button>
+            </Link>
+            <Link href="/faq">
+              <Button variant="outline" size="sm" className="flex items-center gap-2">
+                <HelpCircle className="h-4 w-4" />
+                FAQ
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
 
