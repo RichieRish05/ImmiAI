@@ -92,3 +92,71 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.goog-te-banner-frame.skiptranslate {
+  display: none !important;
+}
+body {
+  top: 0px !important;
+}
+
+.goog-te-gadget {
+  font-family: inherit !important;
+  font-size: 0.875rem !important;
+  color: #1f2937 !important;
+}
+
+.goog-te-gadget-simple {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Hide the top banner */
+.goog-te-banner-frame.skiptranslate,
+body > .goog-te-banner-frame {
+  display: none !important;
+  height: 0 !important;
+}
+
+/* Prevent the body from shifting down due to banner */
+body {
+  top: 0px !important;
+}
+
+/* Minimize Translate gadget styling */
+#google_translate_element {
+  z-index: 9999;
+  font-size: 0.8rem;
+}
+
+/* Optional: hide the "powered by Google" footer — technically against ToS */
+.goog-logo-link,
+.goog-te-gadget span {
+  display: none !important;
+}
+
+/* Hide the Google Translate top banner */
+body > .goog-te-banner-frame.skiptranslate {
+  display: none !important;
+  height: 0 !important;
+}
+html {
+  margin-top: 0px !important;
+}
+
+/* Prevent page shift when banner is hidden */
+body {
+  top: 0px !important;
+  position: static !important;
+}
+
+/* Hides Google Translate banner injected by the widget */
+body > .goog-te-banner-frame.skiptranslate {
+  display: none !important;
+  height: 0 !important;
+}
+html {
+  margin-top: 0px !important;
+}

@@ -10,6 +10,7 @@ let pinecone: Pinecone | null = null
 let index: any = null
 
 try {
+  console.log("🔑 Pinecone Index:", process.env.PINECONE_API_KEY);
   pinecone = new Pinecone({
     apiKey: process.env.PINECONE_API_KEY,
   })

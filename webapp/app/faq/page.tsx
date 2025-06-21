@@ -1,7 +1,12 @@
+"use client"
+
 import { Shield, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
+import dynamic from "next/dynamic"
+
+const TranslateWidget = dynamic(() => import("@/components/TranslateWidget"), { ssr: false })
 
 const FAQ_DATA = [
   {
@@ -59,6 +64,9 @@ const FAQ_DATA = [
 export default function FAQPage() {
   return (
     <div className="min-h-screen bg-white">
+      {/* Google Translate Widget */}
+      <TranslateWidget />
+
       {/* Header */}
       <div className="border-b border-gray-200 p-4">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
