@@ -1,8 +1,11 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import dynamic from "next/dynamic"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Search, Filter } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 
 // Fix for Leaflet marker icons in Next.js
 import L from "leaflet"
@@ -18,6 +21,7 @@ const MapContainer = dynamic(() => import("react-leaflet").then((mod) => mod.Map
 const TileLayer = dynamic(() => import("react-leaflet").then((mod) => mod.TileLayer), { ssr: false })
 const Marker = dynamic(() => import("react-leaflet").then((mod) => mod.Marker), { ssr: false })
 const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), { ssr: false })
+const ZoomControl = dynamic(() => import("react-leaflet").then((mod) => mod.ZoomControl), { ssr: false })
 
 // Sample ICE raid data
 const iceRaids = [
@@ -91,14 +95,37 @@ const iceRaids = [
 
 export default function IceRaidMap() {
   const [isClient, setIsClient] = useState(false)
+  const [search, setSearch] = useState("")
+  const [filteredRaids, setFilteredRaids] = useState(iceRaids)
+  const mapRef = useRef<any>(null)
 
   useEffect(() => {
     setIsClient(true)
   }, [])
 
+  useEffect(() => {
+    if (search) {
+      const results = iceRaids.filter((raid) => raid.location.toLowerCase().includes(search.toLowerCase()))
+      setFilteredRaids(results)
+    } else {
+      setFilteredRaids(iceRaids)
+    }
+  }, [search])
+
+  const handleLocationClick = (raid: any) => {
+    // Pan to the selected location on the map
+    if (mapRef.current) {
+      mapRef.current.setView([raid.lat, raid.lng], 12)
+    }
+    setSearch("")
+    setFilteredRaids(iceRaids)
+    
+    console.log("Clicked on:", raid.location)
+  }
+
   if (!isClient) {
     return (
-      <Card className="w-full h-[400px]">
+      <Card className="w-full h-[600px]">
         <CardHeader>
           <CardTitle>ICE Raids Map</CardTitle>
         </CardHeader>
@@ -111,23 +138,72 @@ export default function IceRaidMap() {
 
   return (
     <div className="w-full space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle>ICE Raids Map</CardTitle>
-          <p className="text-sm text-muted-foreground">Click on any marker to view details about the raid</p>
+      <Card className="relative overflow-visible">
+        <CardHeader className="space-y-4 relative z-10">
+          <div>
+            <CardTitle className="text-2xl">ICE Raids Map</CardTitle>
+            <p className="text-sm text-muted-foreground mt-1">Click on any marker to view details about the raid</p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 z-10" />
+              <Input
+                type="text"
+                placeholder="Search for a location..."
+                className="pl-10 relative"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+            <Button variant="outline" size="sm" className="shrink-0">
+              <Filter className="h-4 w-4 mr-2" />
+              Filters
+            </Button>
+          </div>
         </CardHeader>
+
+        {/* Search Results Overlay - positioned to overlay the map */}
+        {search && filteredRaids.length > 0 && (
+          <div className="absolute top-36 left-6 right-6 bg-white border border-gray-200 rounded-lg shadow-xl max-h-60 overflow-y-auto z-[1000] divide-y divide-gray-100">
+            <div className="px-4 py-2 text-sm text-gray-500 bg-gray-50 rounded-t-lg">
+              {filteredRaids.length} result{filteredRaids.length !== 1 ? "s" : ""} found
+            </div>
+            {filteredRaids.map((raid) => (
+              <div
+                key={raid.id}
+                className="px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors duration-150 ease-in-out"
+                onClick={() => handleLocationClick(raid)}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="font-medium text-gray-900 text-sm">{raid.location}</div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      {new Date(raid.date).toLocaleDateString()} • {raid.type} • {raid.detainees} detainees
+                    </div>
+                  </div>
+                  <div className="ml-3">
+                    <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
         <CardContent className="p-0">
-          <div className="h-[525px] w-full">
+          <div className="h-[600px] w-full">
             <MapContainer
               center={[39.8283, -98.5795]} // Center of US
               zoom={4}
               style={{ height: "100%", width: "100%" }}
               className="rounded-b-lg"
+              ref={mapRef}
+              zoomControl={false} // Disable default zoom control
             >
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
+              <ZoomControl position="bottomright" />
               {iceRaids.map((raid) => (
                 <Marker key={raid.id} position={[raid.lat, raid.lng]}>
                   <Popup maxWidth={300} className="custom-popup">
