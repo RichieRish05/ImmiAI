@@ -1608,9 +1608,6 @@ video {
   --tw-gradient-to: rgb(37 99 235 / 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
-.to-indigo-100 {
-  --tw-gradient-to: #e0e7ff var(--tw-gradient-to-position);
-}
 .to-indigo-50 {
   --tw-gradient-to: #eef2ff var(--tw-gradient-to-position);
 }
