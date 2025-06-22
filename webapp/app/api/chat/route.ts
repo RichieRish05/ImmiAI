@@ -1,4 +1,5 @@
 import { openai } from "@ai-sdk/openai"
+import { google } from "@ai-sdk/google"
 import { streamText, type Message } from "ai"
 import { Pinecone } from "@pinecone-database/pinecone"
 
@@ -219,7 +220,7 @@ IMPORTANT: At the very end of your response, add a hidden sources marker like th
 This marker will be parsed by the frontend to show source tags.`
 
     const result = streamText({
-      model: openai("gpt-4o"),
+      model: google("gemini-2.0-flash-exp"),
       system: systemPromptWithContext,
       messages,
       experimental_attachments: attachments,
