@@ -121,10 +121,15 @@ export default function ImmigrationChatbot() {
                 FAQ
               </Button>
             </Link>
+            <Link href="/translate-legal">
+              <Button variant="outline" size="sm" className="flex items-center gap-2">
+                <HelpCircle className="h-4 w-4" />
+                Translate Legal
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
-
       {/* Chat Messages */}
       <div className="flex-1 overflow-hidden">
         <div className="h-full max-w-3xl mx-auto flex flex-col">
