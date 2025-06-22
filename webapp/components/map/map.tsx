@@ -64,13 +64,29 @@ export default function IceRaidMap() {
   // on mount: mark client and fetch
   useEffect(() => {
     setIsClient(true);
-    fetch("http://localhost:8000/raids")
-      .then((r) => r.json())
-      .then((data: Raid[]) => {
-        setRaids(data);
-        setFiltered(data);
-      })
-      .catch(console.error);
+
+    const fetchAllReports = async () => {
+      try {
+        const [fastapiRes, mongoRes] = await Promise.all([
+          fetch("http://localhost:8000/raids"),
+          fetch("/api/report"),
+        ]);
+
+        const [fastapiData, mongoData] = await Promise.all([
+          fastapiRes.json(),
+          mongoRes.json(),
+        ]);
+
+        const combined = [...fastapiData, ...mongoData];
+        console.log(combined)
+        setRaids(combined);
+        setFiltered(combined);
+      } catch (err) {
+        console.error("Error fetching reports:", err);
+      }
+    };
+
+    fetchAllReports();
   }, []);
 
   // filter by city

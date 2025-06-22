@@ -13,3 +13,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Failed to save report" }, { status: 500 })
   }
 }
+
+export async function GET() {
+  try {
+    await connectDB();
+    const reports = await Report.find().sort({ createdAt: -1 }); // optional: most recent first
+    return NextResponse.json(reports);
+  } catch (err) {
+    return NextResponse.json({ error: "Failed to fetch reports" }, { status: 500 });
+  }
+}
