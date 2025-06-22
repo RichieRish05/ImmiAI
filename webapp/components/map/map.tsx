@@ -52,6 +52,7 @@ type Raid = {
   lon: number | null;
   city: string | null;
   date: string;
+  description?: string | null;
 };
 
 export default function IceRaidMap() {
@@ -78,7 +79,7 @@ export default function IceRaidMap() {
         ]);
 
         const combined = [...fastapiData, ...mongoData];
-        console.log(combined)
+        console.log(combined);
         setRaids(combined);
         setFiltered(combined);
       } catch (err) {
@@ -182,6 +183,14 @@ export default function IceRaidMap() {
                       <strong>{r.city}</strong>
                       <br />
                       {new Date(r.date).toLocaleDateString()}
+                      {r.description && (
+                        <>
+                          <hr className="my-2" />
+                          <p className="text-sm text-gray-700 whitespace-pre-line">
+                            Description: {r.description}
+                          </p>
+                        </>
+                      )}
                     </Popup>
                   </Marker>
                 ) : null
