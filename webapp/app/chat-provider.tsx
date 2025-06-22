@@ -14,6 +14,7 @@ interface ChatContextType {
   append: (message: { role: string; content: string }) => Promise<void>
   ragStatus: "checking" | "enabled" | "fallback"
   setRagStatus: (status: "checking" | "enabled" | "fallback") => void
+  setInput: (input: string) => void
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined)
@@ -38,6 +39,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         setRagStatus("enabled")
       }
     },
+    experimental_attachments: true, // Enable attachment support
   })
 
   return <ChatContext.Provider value={{ ...chatProps, ragStatus, setRagStatus }}>{children}</ChatContext.Provider>

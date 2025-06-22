@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { ChatProvider } from "./chat-provider"
+import { LanguageProvider } from "@/contexts/language-context"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -20,7 +21,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ChatProvider>{children}</ChatProvider>
+        <LanguageProvider>
+          <ChatProvider>{children}</ChatProvider>
+        </LanguageProvider>
       </body>
     </html>
   )

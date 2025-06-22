@@ -1,5 +1,5 @@
 import { openai } from "@ai-sdk/openai"
-import { streamText } from "ai"
+import { streamText, type Message } from "ai"
 import { Pinecone } from "@pinecone-database/pinecone"
 
 // Allow streaming responses up to 30 seconds
@@ -14,12 +14,12 @@ try {
     apiKey: process.env.PINECONE_API_KEY,
   })
 
-  index = pinecone.index("hack-test")
+  index = pinecone.index(process.env.PINECONE_INDEX_NAME)
 } catch (error) {
   console.error("Failed to initialize Pinecone:", error)
 }
 
-// Function to get embeddings from OpenAI
+// Function to get embeddings from OpenAI (keeping this for RAG compatibility)
 async function getEmbedding(text: string) {
   try {
     const response = await fetch("https://api.openai.com/v1/embeddings", {
@@ -30,8 +30,7 @@ async function getEmbedding(text: string) {
       },
       body: JSON.stringify({
         input: text,
-        model: "text-embedding-3-small",
-        dimensions: 512,
+        model: "text-embedding-ada-002",
       }),
     })
 
@@ -81,21 +80,24 @@ async function retrieveContext(query: string): Promise<{ context: string; source
 
     const searchResults = await Promise.race([searchPromise, timeoutPromise])
 
-    // Extract context and source IDs (only use sources with similarity > 0.7)
+    // Extract context and source names (only use sources with similarity > 0.7)
     const contexts: string[] = []
-    const sources: string[] = []
+    const sourceNames = new Set<string>() // Use Set to ensure uniqueness
 
     searchResults.matches?.forEach((match) => {
       if (match.metadata?.text && match.score && match.score > 0.7) {
         contexts.push(match.metadata.text)
-        sources.push(match.id)
+        // Only use source_name if it exists
+        if (match.metadata.source_name) {
+          sourceNames.add(match.metadata.source_name)
+        }
       }
     })
 
     console.log(`✅ Retrieved ${contexts.length} relevant contexts from Pinecone (filtered by >0.7 similarity)`)
     return {
       context: contexts.join("\n\n"),
-      sources: sources,
+      sources: Array.from(sourceNames), // Convert Set back to Array
     }
   } catch (error) {
     console.error("❌ Error retrieving context from Pinecone:", error)
@@ -128,6 +130,8 @@ Workplace Rights:
 - ICE can conduct workplace raids
 - You have the right to remain silent and ask for an attorney
 - Do not run, as this may be seen as suspicious behavior
+
+Answer in the same language the user talks to you in!
 `
 
 export async function POST(req: Request) {
@@ -135,13 +139,18 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json()
-    const { messages } = body
+    const { messages, attachments }: { messages: Message[]; attachments?: any[] } = body
 
     if (!messages || !Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: "Invalid messages format" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       })
+    }
+
+    // Log attachments for debugging
+    if (attachments && attachments.length > 0) {
+      console.log("📎 Received attachments:", attachments.length)
     }
 
     // Get the latest user message for RAG retrieval
@@ -172,7 +181,7 @@ export async function POST(req: Request) {
       ragUsed = true
     }
 
-    // Enhanced system prompt with context
+    // Enhanced system prompt with context and multimodal instructions
     const systemPromptWithContext = `You are a knowledgeable immigration rights assistant. Your role is to help immigrants understand their legal rights when encountering ICE (Immigration and Customs Enforcement) or other immigration authorities.
 
 ${
@@ -195,6 +204,13 @@ Key principles to follow:
 - Be clear about what documents people are/aren't required to show
 - Explain the difference between ICE, police, and other authorities
 
+MULTIMODAL INSTRUCTIONS:
+- If the user shares an image of a document, analyze it carefully and provide relevant advice
+- For immigration documents, explain what they mean and what rights they convey
+- For notices or forms, help interpret the content and next steps
+- Always remind users that document analysis is for informational purposes only
+- Suggest consulting an attorney for official document interpretation
+
 Always be compassionate, clear, and empowering while providing factual information about rights and procedures.
 
 IMPORTANT: At the very end of your response, add a hidden sources marker like this:
@@ -206,6 +222,7 @@ This marker will be parsed by the frontend to show source tags.`
       model: openai("gpt-4o"),
       system: systemPromptWithContext,
       messages,
+      experimental_attachments: attachments,
     })
 
     return result.toDataStreamResponse()
