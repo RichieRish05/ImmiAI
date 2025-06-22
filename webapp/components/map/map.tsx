@@ -170,7 +170,7 @@ export default function IceRaidMap() {
                 );
               }}
             >
-              I’m Here
+              Activitiy Near Me
             </Button>
             <Button
               variant="outline"
