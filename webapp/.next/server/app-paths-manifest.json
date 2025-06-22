@@ -1,3 +1,7 @@
 {
-  "/translate-legal/page": "app/translate-legal/page.js"
+  "/_not-found/page": "app/_not-found/page.js",
+  "/faq/page": "app/faq/page.js",
+  "/map/page": "app/map/page.js",
+  "/translate-legal/page": "app/translate-legal/page.js",
+  "/page": "app/page.js"
 }

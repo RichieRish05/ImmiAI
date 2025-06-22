@@ -13,6 +13,9 @@ import { useToast } from "@/hooks/use-toast"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
+
+const API_URL = "https://berkhaxai.onrender.com"
+
 interface TranslationState {
   originalText: string
   translatedText: string
@@ -65,7 +68,7 @@ export default function PDFTranslator() {
     formData.append("file", file)
     formData.append("target_language", targetLang)
 
-    const response = await fetch("http://localhost:8000/api/translate-pdf", {
+    const response = await fetch(`${API_URL}/api/translate-pdf`, {
       method: "POST",
       body: formData,
     })
@@ -123,7 +126,7 @@ export default function PDFTranslator() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen p-4">
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex items-center gap-4">
           <Link href="/">
