@@ -16,6 +16,7 @@ export async function POST(req: Request) {
 
 export async function GET() {
   try {
+    console.log('hi')
     await connectDB();
     const reports = await Report.find().sort({ createdAt: -1 }); // optional: most recent first
     return NextResponse.json(reports);

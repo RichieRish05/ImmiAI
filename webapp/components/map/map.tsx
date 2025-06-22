@@ -1,13 +1,13 @@
-// webapp/components/map/map.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import ReportModal from "./report-modal";
+import type { Map as LeafletMap } from "leaflet";
 
 // Only load Leaflet on the client
 let L: any = null;
@@ -61,8 +61,8 @@ export default function IceRaidMap() {
   const [search, setSearch] = useState("");
   const [filtered, setFiltered] = useState<Raid[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const mapRef = useRef<LeafletMap | null>(null);
 
-  // on mount: mark client and fetch
   useEffect(() => {
     setIsClient(true);
 
@@ -79,7 +79,6 @@ export default function IceRaidMap() {
         ]);
 
         const combined = [...fastapiData, ...mongoData];
-        console.log(combined);
         setRaids(combined);
         setFiltered(combined);
       } catch (err) {
@@ -90,7 +89,6 @@ export default function IceRaidMap() {
     fetchAllReports();
   }, []);
 
-  // filter by city
   useEffect(() => {
     if (search) {
       setFiltered(
@@ -149,14 +147,39 @@ export default function IceRaidMap() {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="shrink-0"
-            onClick={() => setModalOpen(true)}
-          >
-            Report Location
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => {
+                if (!navigator.geolocation) {
+                  alert("Geolocation is not supported by your browser.");
+                  return;
+                }
+
+                navigator.geolocation.getCurrentPosition(
+                  (position) => {
+                    const { latitude, longitude } = position.coords;
+                    if (mapRef.current) {
+                      mapRef.current.setView([latitude, longitude], 12);
+                    }
+                  },
+                  () => {
+                    alert("Unable to retrieve your location.");
+                  }
+                );
+              }}
+            >
+              I’m Here
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setModalOpen(true)}
+            >
+              Report Location
+            </Button>
+          </div>
         </CardHeader>
 
         <CardContent className="p-0">
@@ -167,6 +190,11 @@ export default function IceRaidMap() {
               zoomControl={false}
               className="rounded-b-lg z-0"
               style={{ height: "100%", width: "100%" }}
+              ref={(mapInstance) => {
+                if (mapInstance) {
+                  mapRef.current = mapInstance;
+                }
+              }}
             >
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/">OSM</a>'
