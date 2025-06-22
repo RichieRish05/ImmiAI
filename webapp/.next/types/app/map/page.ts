@@ -1,4 +1,4 @@
-// File: /Users/rishi/BerkHaxAI-1/webapp/app/map/page.tsx
+// File: /Users/anam301/BerkHaxAI/webapp/app/map/page.tsx
 import * as entry from '../../../../app/map/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
