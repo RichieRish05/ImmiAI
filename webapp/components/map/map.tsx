@@ -6,6 +6,8 @@ import dynamic from "next/dynamic";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import ReportModal from "./report-modal";
 
 // Only load Leaflet on the client
 let L: any = null;
@@ -57,6 +59,7 @@ export default function IceRaidMap() {
   const [raids, setRaids] = useState<Raid[]>([]);
   const [search, setSearch] = useState("");
   const [filtered, setFiltered] = useState<Raid[]>([]);
+  const [modalOpen, setModalOpen] = useState(false);
 
   // on mount: mark client and fetch
   useEffect(() => {
@@ -111,8 +114,9 @@ export default function IceRaidMap() {
 
   return (
     <div className="w-full space-y-4">
+      <ReportModal open={modalOpen} onClose={() => setModalOpen(false)} />
       <Card className="relative overflow-visible">
-        <CardHeader className="space-y-4 relative z-10">
+        <CardHeader className="space-y-4 relative z-20 bg-white">
           <div>
             <CardTitle className="text-2xl">ICE Raids Map</CardTitle>
             <p className="text-sm text-muted-foreground mt-1">
@@ -128,6 +132,14 @@ export default function IceRaidMap() {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="shrink-0"
+            onClick={() => setModalOpen(true)}
+          >
+            Report Location
+          </Button>
         </CardHeader>
 
         <CardContent className="p-0">
@@ -135,9 +147,9 @@ export default function IceRaidMap() {
             <MapContainer
               center={[39.8283, -98.5795]}
               zoom={4}
-              style={{ height: "100%", width: "100%" }}
               zoomControl={false}
-              className="rounded-b-lg"
+              className="rounded-b-lg z-0"
+              style={{ height: "100%", width: "100%" }}
             >
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/">OSM</a>'
