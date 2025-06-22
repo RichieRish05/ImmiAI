@@ -1,3 +1,4 @@
+// webapp/components/map/map.tsx
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -7,9 +8,10 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import ReportModal from "./report-modal";
+import SmartPromptModal from "./smart-prompt-modal";
 import type { Map as LeafletMap } from "leaflet";
+import { useRouter } from "next/navigation";
 
-// Only load Leaflet on the client
 let L: any = null;
 if (typeof window !== "undefined") {
   // @ts-ignore
@@ -25,7 +27,6 @@ if (typeof window !== "undefined") {
   });
 }
 
-// Dynamically import react-leaflet
 const MapContainer = dynamic(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
   { ssr: false }
@@ -56,16 +57,17 @@ type Raid = {
 };
 
 export default function IceRaidMap() {
+  const router = useRouter();
   const [isClient, setIsClient] = useState(false);
   const [raids, setRaids] = useState<Raid[]>([]);
   const [search, setSearch] = useState("");
   const [filtered, setFiltered] = useState<Raid[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [smartPromptOpen, setSmartPromptOpen] = useState(false);
   const mapRef = useRef<LeafletMap | null>(null);
 
   useEffect(() => {
     setIsClient(true);
-
     const fetchAllReports = async () => {
       try {
         const [fastapiRes, mongoRes] = await Promise.all([
@@ -101,6 +103,39 @@ export default function IceRaidMap() {
     }
   }, [search, raids]);
 
+  const handleGeolocation = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser.");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        if (mapRef.current) {
+          mapRef.current.setView([latitude, longitude], 12);
+        }
+
+        const nearby = raids.some((r) => {
+          if (r.lat && r.lon) {
+            const dist = Math.sqrt(
+              Math.pow(r.lat - latitude, 2) + Math.pow(r.lon - longitude, 2)
+            );
+            return dist < 1.0; // ~within 100km
+          }
+          return false;
+        });
+
+        if (nearby) {
+          setSmartPromptOpen(true);
+        }
+      },
+      () => {
+        alert("Unable to retrieve your location.");
+      }
+    );
+  };
+
   if (!isClient) {
     return (
       <Card className="w-full h-[600px]">
@@ -114,22 +149,25 @@ export default function IceRaidMap() {
     );
   }
 
-  if (isClient && raids.length === 0) {
-    return (
-      <Card className="w-full h-[600px]">
-        <CardHeader>
-          <CardTitle>ICE Raids Map</CardTitle>
-        </CardHeader>
-        <CardContent className="flex items-center justify-center h-full">
-          Fetching reports… please wait
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <div className="w-full space-y-4">
       <ReportModal open={modalOpen} onClose={() => setModalOpen(false)} />
+      <SmartPromptModal
+        open={smartPromptOpen}
+        onClose={() => setSmartPromptOpen(false)}
+        onOpenChatbot={() => {
+          setSmartPromptOpen(false);
+          router.push(
+            "/?prefill=What%20are%20my%20rights%20during%20an%20ICE%20encounter%3F"
+          );
+
+          console.log("Chatbot opened");
+        }}
+        onUploadDocs={() => {
+          setSmartPromptOpen(false);
+          console.log("Upload docs clicked");
+        }}
+      />
       <Card className="relative overflow-visible">
         <CardHeader className="space-y-4 relative z-20 bg-white">
           <div>
@@ -148,29 +186,8 @@ export default function IceRaidMap() {
             />
           </div>
           <div className="flex gap-2">
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => {
-                if (!navigator.geolocation) {
-                  alert("Geolocation is not supported by your browser.");
-                  return;
-                }
-
-                navigator.geolocation.getCurrentPosition(
-                  (position) => {
-                    const { latitude, longitude } = position.coords;
-                    if (mapRef.current) {
-                      mapRef.current.setView([latitude, longitude], 12);
-                    }
-                  },
-                  () => {
-                    alert("Unable to retrieve your location.");
-                  }
-                );
-              }}
-            >
-              Activitiy Near Me
+            <Button variant="secondary" size="sm" onClick={handleGeolocation}>
+              Activity Near Me
             </Button>
             <Button
               variant="outline"
