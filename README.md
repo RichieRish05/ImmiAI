@@ -93,7 +93,7 @@ This application provides general information about immigration rights for educa
 - [Anish Nambirajan](https://github.com/an301): Web Scraping, Pinecone DB Builder, 
 - [Cyril Joby](https://github.com/cyriljoby): ICE Database Builder, UI/UX Designer, User Flows
 
-Rea
+Please feel free to reach out to any one of us if you have questions!
 
 ---
 
