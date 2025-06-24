@@ -1,8 +1,8 @@
-# ImmiAI
+## 🌍 ImmiAI – Your Immigration Rights Ally
+ImmiAI is more than just an app. It’s a movement to make legal help more accessible, understandable, and actionable for immigrant communities struggling with citizenship status. From confusing legal jargon to unexpected encounters with immigration officers, navigating the system can be overwhelming. That’s why we built ImmiAI, a smart, multilingual, and supportive platform designed to empower immigrants with tools to know their rights, translate documents, and stay informed — all in one place.
 
-# BerkHaxAI - Immigration Rights Assistant
-
-A comprehensive web application that helps immigrants understand their legal rights when encountering immigration authorities. The platform combines AI-powered chat assistance, document translation, interactive maps showcasing ICE activity, and educational resources.
+## ✨ Why We Built This
+Too many immigrants are left vulnerable because they don't have the legal resources or support they need in moments that matter most. Lawyers are expensive. Language is a barrier. Fear is real. ImmiAI was built to change that. With AI-powered tools, real-time ICE activity maps, and clear rights education, we’re turning technology into a shield — and giving the power back to the people.
 
 ## 🌟 Features
 
@@ -30,7 +30,7 @@ A comprehensive web application that helps immigrants understand their legal rig
 - **Quick Prompts**: Pre-written questions for common scenarios
 - **Legal Disclaimers**: Clear guidance on when to seek professional legal help
 
-## ��️ Architecture
+## Architecture
 
 ### Frontend (Next.js)
 - **Framework**: Next.js 15 with React 19
@@ -53,7 +53,7 @@ A comprehensive web application that helps immigrants understand their legal rig
 - **PDF Processing**: pdfplumber for text extraction
 - **CORS Support**: Cross-origin requests enabled
 
-## �� Security & Privacy
+## Security & Privacy
 
 - **No Data Storage**: Chat messages are not permanently stored
 - **Secure API Keys**: Environment variables for sensitive data
@@ -85,6 +85,15 @@ This application provides general information about immigration rights for educa
 - [ACLU Immigrants' Rights Project](https://www.aclu.org/issues/immigrants-rights)
 - [United We Dream](https://unitedwedream.org/)
 - [Immigration Advocates Network](https://www.immigrationadvocates.org/)
+
+## 👨‍💻 Contributors
+
+- [Rishi Murumkar](https://github.com/RichieRish05): Pinecone DB Builder, ICE Map UI, Legal Document Translation Pipeline and UI 
+- [Alexander Anokhin](https://github.com/aanokh): RAG Pipeline, Voice Assistant, Frontend Development
+- [Anish Nambirajan](https://github.com/an301): Web Scraping, Pinecone DB Builder, 
+- [Cyril Joby](https://github.com/cyriljoby): ICE Database Builder, UI/UX Designer, User Flows
+
+Rea
 
 ---
 
