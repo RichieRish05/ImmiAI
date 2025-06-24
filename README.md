@@ -1,4 +1,4 @@
-## 🌍 ImmiAI – Your Immigration Rights Ally [Visit the Live Site](https://v0-immigration-chatbot-ui.vercel.app/) 
+## 🌍 ImmiAI – Your Immigration Rights Ally | [Visit the Live Site](https://v0-immigration-chatbot-ui.vercel.app/) 
 ImmiAI is more than just an app. It’s a movement to make legal help more accessible, understandable, and actionable for immigrant communities struggling with citizenship status. From confusing legal jargon to unexpected encounters with immigration officers, navigating the system can be overwhelming. That’s why we built ImmiAI, a smart, multilingual, and supportive platform designed to empower immigrants with tools to know their rights, translate documents, and stay informed — all in one place.
 
 
